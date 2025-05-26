@@ -1,5 +1,5 @@
 src/
 saved_models/
-*.py
+# *.py
 analysis.ipynb
 *.sh
