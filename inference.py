@@ -36,7 +36,7 @@ def main(args):
     seed_everything()
     torch.cuda.set_device(args.device)
     
-    state = torch.load(args.state_path, map_location=args.device)
+    # state = torch.load(args.state_path, map_location=args.device)
 
     args.hidden_dim = 768 if 'base' in args.model_name else 384
 
@@ -67,10 +67,10 @@ def main(args):
     
     for key in encoders.keys():
         print(f'Encoder {key}: {encoders[key]}')
-        encoders[key].load_state_dict(state['encoder_states'][key])
-        decoders[key].load_state_dict(state['decoder_states'][key])
+        # encoders[key].load_state_dict(state['encoder_states'][key])
+        # decoders[key].load_state_dict(state['decoder_states'][key])
         
-    compressed_model.load_state_dict(state['model_state_dict'])
+    # compressed_model.load_state_dict(state['model_state_dict'])
     change_to_half(compressed_model)
 
     compare_model_parameters(model, compressed_model, encoders, 
