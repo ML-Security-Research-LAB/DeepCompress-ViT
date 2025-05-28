@@ -49,8 +49,12 @@ python main.py \
 
 ### 2. Download Pre-trained Weights
 
-Download our pre-compressed checkpoints from Google Drive and extract into:
+Download our compressed checkpoints from Google Drive:
 
+- [DeiT-Small (rank 277)](https://drive.google.com/file/d/1-aj_Jnam_fJboS957wdvxEMylIo-Oip8/view?usp=drive_link)
+- [DeiT-Base (rank 502)](https://drive.google.com/file/d/1zh3Q4aTB_sVMros2ilZd02kEq8RboNCh/view?usp=drive_link)
+
+The files should be placed in the following directory structure:
 ```
 saved_models/
 ├── small_rank_277/
