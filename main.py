@@ -37,27 +37,10 @@ def main(args):
     analyze_parameter_storage(compressed_model, encoders, decoders, original_weights, args)
 
     # Perform initial training steps to fit the decoder to the original weights
-    # initial_fit(encoders, decoders, original_weights, args)
+    initial_fit(encoders, decoders, original_weights, args)
 
     # Create optimizer and scheduler
     optimizer, scheduler, optimizer_ft, scheduler_ft = create_optimizer_scheduler(compressed_model, encoders, decoders, args)
-    
-    state_path = '/home/sahmed9/codes/DeepCompress-ViT/saved_models/base_rank_502/deit_base_patch16_224.pth'
-    state = torch.load(state_path)
-    print(state.keys())
-    
-    optimizer.load_state_dict(state['optimizer_state'])
-    scheduler.load_state_dict(state['scheduler_state'])
-    optimizer_ft.load_state_dict(state['optimizer_finetune_state'])
-    scheduler_ft.load_state_dict(state['scheduler_finetune_state'])
-    args.epochs = args.epochs - state['epoch']
-    print('Remaining epochs:', args.epochs)
-    
-    for key in encoders.keys():
-        encoders[key].load_state_dict(state['encoder_states'][key])
-        decoders[key].load_state_dict(state['decoder_states'][key])
-    
-    compressed_model.load_state_dict(state['model_state_dict'])
         
     # distilled model for knowledge distillation
     if args.distilled_model:
@@ -76,7 +59,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train Vision Transformer with weight compression')
     parser.add_argument('--model_name', type=str, default='deit_small_patch16_224', help='Name of the Vision Transformer model')
     parser.add_argument('--lr', type=float, default=1e-4, help='Learning rate for the Autoencoder')
-    parser.add_argument('--min-lr', type=float, default=0, help='Min. Learning rate for the Autoencoder')
+    parser.add_argument('--min_lr', type=float, default=0, help='Min. Learning rate for the Autoencoder')
     parser.add_argument('--epochs', type=int, default=100, help='Number of epochs to train the Autoencoder')
     parser.add_argument('--total_blocks', type=int, default=12, help='Number of blocks to compress')
     parser.add_argument('--device', type=str, default='cuda:0', help='Device to use for training')
@@ -87,12 +70,12 @@ if __name__ == "__main__":
     parser.add_argument('--base_dir', type=str, default='test', help='Base directory for saving models')
     parser.add_argument('--skip_qkv', action='store_true', help='Skip compressing qkv layer in MultiheadAttention')
     parser.add_argument('--mixup', action='store_true', help='Use Mixup')
-    parser.add_argument('--ce-weight', type=float, default=1.0, help='Weight for distillation loss')
-    parser.add_argument('--mse-weight', type=float, default=1.0, help='Weight for MSE loss')
-    parser.add_argument('--distillation-weight', type=float, default=3e3, help='Weight for distillation loss')
+    parser.add_argument('--ce_weight', type=float, default=1.0, help='Weight for distillation loss')
+    parser.add_argument('--mse_weight', type=float, default=1.0, help='Weight for MSE loss')
+    parser.add_argument('--distillation_weight', type=float, default=3e3, help='Weight for distillation loss')
     parser.add_argument('--finetune_other_params', action='store_true', help='Finetune other parameters of the model')
     parser.add_argument('--opt', type=str, default='adamw', help='Optimizer to use for finetuning other parameters')
-    parser.add_argument('--weight-decay', type=float, default=0.05, help='weight decay (default: 0.05)')
+    parser.add_argument('--weight_decay', type=float, default=0.05, help='weight decay (default: 0.05)')
     parser.add_argument('--momentum', type=float, default=0.9, metavar='M', help='SGD momentum (default: 0.9)')
     parser.add_argument('--rank', type=int, default=276, help='Rank for encoded weight matrices')
     parser.add_argument('--distilled_model', action='store_true', help='Use distilled model for distillation')
