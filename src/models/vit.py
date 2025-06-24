@@ -47,11 +47,18 @@ def quantize_first_and_last_layer(model, args, nbits=8):
     return model
 
 def get_models(args):
-    model = timm.create_model(args.model_name, pretrained=True)
+    if args.dataset not in ['imagenet', 'cifar10']:
+        raise ValueError("Unsupported dataset. Choose 'imagenet' or 'cifar10'.")
+    num_classes = 1000 if args.dataset == 'imagenet' else 10
+    model = timm.create_model(args.model_name, pretrained=True, num_classes=num_classes)
     model.cuda()
 
-    compressed_model = timm.create_model(args.model_name, pretrained=True)
+    compressed_model = timm.create_model(args.model_name, pretrained=True, num_classes=num_classes)
     compressed_model.cuda()
+    
+    if args.dataset == 'cifar10':
+        model.load_state_dict(torch.load(f'saved_models/deit_small_cifar10_best.pth', map_location='cpu'), strict=True)
+        compressed_model.load_state_dict(torch.load(f'saved_models/deit_small_cifar10_best.pth', map_location='cpu'), strict=True)
 
     compressed_model = quantize_first_and_last_layer(compressed_model, args)
     return model, compressed_model

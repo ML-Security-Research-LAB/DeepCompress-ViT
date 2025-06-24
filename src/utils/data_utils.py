@@ -67,7 +67,7 @@ def get_dataloaders_cifar10(BATCH_SIZE = 128):
     std = [0.229, 0.224, 0.225]
 
     train_transform = transforms.Compose([
-        transforms.RandomResizedCrop(128),
+        transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         transforms.Normalize(mean, std)
@@ -76,8 +76,8 @@ def get_dataloaders_cifar10(BATCH_SIZE = 128):
     print(train_transform)
     
     test_transform = transforms.Compose([
-        transforms.Resize(128),
-        transforms.CenterCrop(128),
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
         transforms.ToTensor(),
         transforms.Normalize(mean, std)
     ])  # here is actually the validation dataset

@@ -58,6 +58,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train Vision Transformer with weight compression')
     parser.add_argument('--model_name', type=str, default='deit_small_patch16_224', help='Name of the Vision Transformer model')
+    parser.add_argument('--dataset', type=str, default='imagenet', choices=['cifar10', 'imagenet'], help='Dataset to use for training')
     parser.add_argument('--lr', type=float, default=1e-4, help='Learning rate for the Autoencoder')
     parser.add_argument('--min_lr', type=float, default=0, help='Min. Learning rate for the Autoencoder')
     parser.add_argument('--epochs', type=int, default=100, help='Number of epochs to train the Autoencoder')

@@ -4,7 +4,7 @@ import torch
 import argparse
 from tqdm import tqdm
 from src.models import get_models, get_encoder_decoders
-from src.utils import (seed_everything, get_dataloaders_imagenet, compare_model_parameters, evaluate_new_mixed, 
+from src.utils import (seed_everything, get_dataloaders_imagenet, get_dataloaders_cifar10, compare_model_parameters, evaluate_new_mixed, 
                        get_layer_names, update_model_weights, process_model_blocks, create_model_for_flops, count_flops,
                        analyze_parameter_storage, analyze_parameter_storage_mask_rcnn_vit_backbone)
 
@@ -36,7 +36,7 @@ def main(args):
     seed_everything()
     torch.cuda.set_device(args.device)
     
-    # state = torch.load(args.state_path, map_location=args.device)
+    state = torch.load(args.state_path, map_location=args.device)
 
     args.hidden_dim = 768 if 'base' in args.model_name else 384
 
@@ -50,7 +50,10 @@ def main(args):
                                                             skip_qkv=args.skip_qkv)
 
     # Get data loaders
-    _, val_loader = get_dataloaders_imagenet(args.batch_size)
+    if args.dataset == 'cifar10':
+        _, val_loader = get_dataloaders_cifar10(args.batch_size)
+    elif args.dataset == 'imagenet':
+        _, val_loader = get_dataloaders_imagenet(args.batch_size)
 
     # FLOPs calculation
     print('Original model:')
@@ -67,10 +70,10 @@ def main(args):
     
     for key in encoders.keys():
         print(f'Encoder {key}: {encoders[key]}')
-        # encoders[key].load_state_dict(state['encoder_states'][key])
-        # decoders[key].load_state_dict(state['decoder_states'][key])
+        encoders[key].load_state_dict(state['encoder_states'][key])
+        decoders[key].load_state_dict(state['decoder_states'][key])
         
-    # compressed_model.load_state_dict(state['model_state_dict'])
+    compressed_model.load_state_dict(state['model_state_dict'])
     change_to_half(compressed_model)
 
     compare_model_parameters(model, compressed_model, encoders, 
@@ -96,6 +99,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train Vision Transformer with weight compression')
     parser.add_argument('--model_name', type=str, default='deit_small_patch16_224', help='Name of the Vision Transformer model')
+    parser.add_argument('--dataset', type=str, default='imagenet', choices=['cifar10', 'imagenet'], help='Dataset to use for training')
     parser.add_argument('--total_blocks', type=int, default=12, help='Number of blocks to compress')
     parser.add_argument('--device', type=str, default='cuda:0', help='Device to use for training')
     parser.add_argument('--mixed_precision', action='store_true', help='Use mixed precision training')
