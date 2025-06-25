@@ -84,3 +84,35 @@ python inference.py \
   --mixed_precision \
   --state_path saved_models/base_rank_502/deit_base_patch16_224.pth
 ```
+
+### 4. Optional CIFAR-10 Evaluation
+
+Evaluate our models on the CIFAR-10 dataset (resized to 224x224) using our pre-trained checkpoints.
+
+**Download Pre-trained Models:**
+
+- [DeiT-Small (uncompressed, 97.29% Top-1 Acc)](https://drive.google.com/file/d/1xuKle-QN-AUhK4oeRrobFNL0OElQhL9j/view?usp=sharing)
+- [DeepCompress-ViT-DeiT-S (compressed rank 277, 96.73% Top-1 Acc)](https://drive.google.com/file/d/1c9q6AH3Nr90ALtQOq9Lt8u1Rv8Zld2r1/view?usp=sharing)
+
+**Directory Structure:**
+
+```
+saved_models/
+├── small_rank_277_cifar10/
+│   └── deit_small_patch16_224.pth
+└── deit_small_cifar10_best.pth
+```
+
+**Run Evaluation:**
+
+```bash
+# Evaluate compressed DeiT-Small on CIFAR-10
+python inference.py \
+  --model_name deit_small_patch16_224 \
+  --batch_size 256 \
+  --device cuda:0 \
+  --rank 277 \
+  --mixed_precision \
+  --state_path saved_models/small_rank_277_cifar10/deit_small_patch16_224.pth \
+  --dataset cifar10
+```
